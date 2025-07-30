@@ -1,0 +1,100 @@
+<!-- Plugin Configuration File. Read more: https://plugins.jetbrains.com/docs/intellij/plugin-configuration-file.html -->
+<idea-plugin>
+    <id>com.gitwhisper.intellij</id>
+    <name>GitWhisper</name>
+    <vendor email="support@gitwhisper.com" url="https://github.com/gitwhisper/gitwhisper-intellij">GitWhisper</vendor>
+
+    <description><![CDATA[
+    AI-powered Git commit message generator for IntelliJ IDEA and other JetBrains IDEs.
+
+    GitWhisper analyzes your staged changes and generates meaningful, conventional commit messages using AI.
+    Supports multiple AI providers including OpenAI, Claude, Gemini, Ollama, and more.
+
+    Features:
+    • AI-powered commit message generation
+    • Multiple AI provider support (OpenAI, Claude, Gemini, Ollama, etc.)
+    • Multi-language commit messages (30+ languages)
+    • Code change analysis
+    • Smart Git integration
+    • Secure API key storage
+    • Conventional commit format
+    • GitHub integration with PAT support
+    ]]></description>
+
+    <depends>com.intellij.modules.platform</depends>
+
+    <resource-bundle>messages.GitWhisperBundle</resource-bundle>
+
+    <extensions defaultExtensionNs="com.intellij">
+        <!-- Application-level configuration -->
+        <applicationConfigurable
+            parentId="tools"
+            instance="com.gitwhisper.intellij.settings.GitWhisperConfigurable"
+            id="com.gitwhisper.intellij.settings.GitWhisperConfigurable"
+            displayName="GitWhisper"/>
+
+        <!-- Application service for configuration -->
+        <applicationService
+            serviceImplementation="com.gitwhisper.intellij.services.GitWhisperConfigService"/>
+
+        <!-- Project service for Git operations -->
+        <projectService
+            serviceImplementation="com.gitwhisper.intellij.services.GitWhisperProjectService"/>
+
+        <!-- Status bar widget -->
+        <statusBarWidgetFactory
+            implementation="com.gitwhisper.intellij.ui.GitWhisperStatusBarWidgetFactory"
+            id="GitWhisperStatusBar"/>
+    </extensions>
+
+    <actions>
+        <!-- Main action group -->
+        <group id="GitWhisper.MainGroup" text="GitWhisper" description="GitWhisper AI-powered Git tools">
+            <add-to-group group-id="VcsGroups" anchor="last"/>
+
+            <action id="GitWhisper.GenerateCommit"
+                    class="com.gitwhisper.intellij.actions.GenerateCommitAction"
+                    text="Generate AI Commit Message"
+                    description="Generate AI-powered commit message for staged changes"
+                    icon="AllIcons.Vcs.CommitNode">
+                <keyboard-shortcut keymap="$default" first-keystroke="control alt G"/>
+                <keyboard-shortcut keymap="Mac OS X" first-keystroke="meta alt G" replace-all="true"/>
+            </action>
+
+            <action id="GitWhisper.AnalyzeChanges"
+                    class="com.gitwhisper.intellij.actions.AnalyzeChangesAction"
+                    text="Analyze Staged Changes"
+                    description="Analyze staged changes with AI"
+                    icon="AllIcons.Actions.Find">
+                <keyboard-shortcut keymap="$default" first-keystroke="control alt A"/>
+                <keyboard-shortcut keymap="Mac OS X" first-keystroke="meta alt A" replace-all="true"/>
+            </action>
+
+            <separator/>
+
+            <action id="GitWhisper.Configure"
+                    class="com.gitwhisper.intellij.actions.ConfigureAction"
+                    text="Configure GitWhisper"
+                    description="Open GitWhisper configuration"
+                    icon="AllIcons.General.Settings">
+                <keyboard-shortcut keymap="$default" first-keystroke="control alt C"/>
+                <keyboard-shortcut keymap="Mac OS X" first-keystroke="meta alt C" replace-all="true"/>
+            </action>
+        </group>
+
+        <!-- VCS Log context menu -->
+        <group id="GitWhisper.VcsLogGroup">
+            <reference ref="GitWhisper.GenerateCommit"/>
+            <reference ref="GitWhisper.AnalyzeChanges"/>
+            <add-to-group group-id="Vcs.Log.ContextMenu" anchor="last"/>
+        </group>
+
+        <!-- Tools menu integration -->
+        <group id="GitWhisper.ToolsMenu">
+            <reference ref="GitWhisper.GenerateCommit"/>
+            <reference ref="GitWhisper.AnalyzeChanges"/>
+            <add-to-group group-id="ToolsMenu" anchor="last"/>
+        </group>
+    </actions>
+</idea-plugin>
+
